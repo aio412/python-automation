@@ -3,73 +3,69 @@ import win32gui,win32api,win32con
 import time
 import PIL
 from PIL import Image,ImageGrab
+import math
+import operator
+from functools import reduce
 import win32_mk as mk
 
 img_exist = 'D:\Code\python\summonAuto\img\\'
 
-def get_hash(img):
-    image = img.resize((18, 13), Image.ANTIALIAS).convert("L")
-    pixels = list(image.getdata())
-    avg = sum(pixels) / len(pixels)
-    h ="".join(map(lambda p : "1" if p > avg else "0", pixels))
-    #print(h)
-    return  h
+# def get_hash(img):
+#     image = img.resize((18, 13), Image.ANTIALIAS).convert("L")
+#     pixels = list(image.getdata())
+#     avg = sum(pixels) / len(pixels)
+#     h ="".join(map(lambda p : "1" if p > avg else "0", pixels))
+#     #print(h)
+#     return  h
 
-def imghash_eq(hash1, hash2):
-    return hash1 == hash2
+# def imghash_eq(hash1, hash2):
+#     return hash1 == hash2
 
 def handle_img(pos,name):
     c_img = ImageGrab.grab(pos)
-    #c_img.save("n_"+name)
     o_img = Image.open(img_exist + name)
-    ch = get_hash(c_img)
-    oh = get_hash(o_img)
-    return imghash_eq(ch,oh)
+    
+    h1=c_img.histogram()
+    h2=o_img.histogram()
+
+    result = math.sqrt(reduce(operator.add,  list(map(lambda a,b: (a-b)**2, h1, h2)))/len(h1) )
+    if name == "success.png":
+        return result < 26
+    else:
+        return result == 0
 
 #用来补充图片的方法
-def check_img():
-   
+def check_img():   
 
     # dead10_pos = (548,620,1150,724)
     
-    # dragon10_pos = (548,620,1150,724)
-    
+    # dragon10_pos = (548,620,1150,724)    
 
-    # start_button_pos = (1278,690,1438,732)
-    
+    # start_button_pos = (1278,690,1438,732)    
 
-    # auto_fight = (282,860,321,913)
-    
+    # auto_fight = (282,860,321,913)    
 
     # turn3_dragon = (954,366,1072,466)
     
     # dragon_success = (720,150,892,228)
     
-    # dragon_close_pos =  (1066,270,103,308)
-    
+    # dragon_close_pos =  (1066,270,103,308)    
 
-    # close_gift_pos = (1066,270,103,308)
-    
+    # close_gift_pos = (1066,270,103,308)    
 
-    # no_power = (735,355,878,390)
-    
+    # no_power = (735,355,878,390)    
 
-    # from_gift = (902,584,1016,626)
-    
+    # from_gift = (902,584,1016,626)    
 
     # from_shop = (618,584,694,626)
     
-    # get_power = (988,348,1056,386)
-    
+    # get_power = (988,348,1056,386)    
 
-    # mana_success = (720,150,892,228)
-    
+    # mana_success = (720,150,892,228)    
 
-    # light10_success = (720,150,892,228)
-    
+    # light10_success = (720,150,892,228)    
 
-    # fire_hell_success = (720,150,892,228)
-    
+    # fire_hell_success = (720,150,892,228)    
 
     # no_fpoint = (670,376,904,414) 友情点不足
 
@@ -77,24 +73,25 @@ def check_img():
     tname = u"BlueStacks App Player"
     mk.show_window_by_title(tname)
 
-    pos = (670,376,904,414)
-    name = "no_fpoint.png"
-    img = ImageGrab.grab(win_pos)
+    pos = (272,860,331,913)
+    name = "auto_fight1_stop.png"
+    img = ImageGrab.grab(pos)
     img.save(img_exist + name)
     print("save picture:%s" % name)
 
 
 #自动龙十,魔力10，光10，地狱火山带狗粮
-def run(mname,auto=1):
-    m_list = ["dragon","light10","mana","fire_hell"]
-    try:
-        m_list.index(mname)
-    except Exception as err:
-        print(err)
-        exit(0)
-    else:
-        win_pic_name = mname + "_success.png"
+def run(mname,auto=0):
+    # m_list = ["dragon","light10","fire10","mana","fire_hell"]
+    # try:
+    #     m_list.index(mname)
+    # except Exception as err:
+    #     print(err)
+    #     exit(0)
+    # else:
+    #     win_pic_name = mname + "_success.png"
 
+    win_pic_name = "success.png"
     print(win_pic_name)
     #exit(0)
     #激活窗口
@@ -113,15 +110,15 @@ def run(mname,auto=1):
         #开打
         start_button_pos = (1278,690,1438,732)
         if handle_img(start_button_pos,"start_button_pos.png"):
-            if mname == "fire_hell":#火山不用点这个，狗粮满级不自动再开
+            if mname == "fire_hell" and turns > 0 : #火山不点这个
                 print("有狗粮满级了，退出")
                 exit(0)
             mk.click_pic(start_button_pos)
             time.sleep(1)
             turns +=1
         #开自动
-        auto_fight = (282,860,321,913)
-        if handle_img(auto_fight,"auto_fight.png"):
+        auto_fight = (272,860,331,913)
+        if handle_img(auto_fight,"auto_fight.png") or handle_img(auto_fight,"auto_fight1.png"):
             mk.click_pic(auto_fight)
             time.sleep(1)
         #胜利 
@@ -134,16 +131,24 @@ def run(mname,auto=1):
             mk.click_pic(win_pos)
             time.sleep(1)#等开宝箱动画
             mk.click_pic(win_pos)
-            time.sleep(1)
+            time.sleep(0.5)
+
+            if mname == "fire_hell":#火山卖符文
+                time.sleep(0.5)
+                mk.mouse_click(680,772)
+                time.sleep(0.5)
+                mk.mouse_click(670,608)
+                time.sleep(0.5)
+            
             #材料
             mk.mouse_click(1085,270)
-            time.sleep(0.5)
+            #time.sleep(0.5)
             #厕纸，精髓
             mk.mouse_click(1085,282)
-            time.sleep(0.5)            
-            #符文（为了兼容龙十只好不卖符文了
+            #time.sleep(0.5)            
+            #符文
             mk.mouse_click(1085,322)
-            time.sleep(0.5)
+            #time.sleep(0.5)
                                
             #再来一次
             mk.mouse_click(518,540)            
@@ -154,8 +159,10 @@ def run(mname,auto=1):
 
             #体力不足
             no_power = (735,355,878,390)
-            if handle_img(no_power,"no_power.png") and auto == 1:
-                
+            if handle_img(no_power,"no_power.png"):
+                if auto == 0:
+                    print("没体力了，退出")
+                    exit(0)
                 from_gift = (902,584,1016,626)#选择礼物箱
                 from_shop = (618,584,694,626)#选择商店
                 if handle_img(from_gift,"from_gift.png"):
@@ -211,5 +218,4 @@ def run(mname,auto=1):
 
 
 if __name__ =='__main__':
-    #run_gouliang()
     check_img()

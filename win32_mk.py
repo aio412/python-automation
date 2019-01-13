@@ -197,10 +197,10 @@ def click_pic(pos):#点击图片，pos=(1,2,3,4)
     x= pos[0] +int( (pos[2]-pos[0]) / 2)
     y= pos[1] +int( (pos[3]-pos[1]) / 2)
     mouse_click(x,y)
-def show_window_by_title(tname,toTop = 1,w=0,h=0):#获取窗口句柄并激活窗口,toTop=1窗口置顶
+def show_window_by_title(tname,toTop = 1):#获取窗口句柄并激活窗口,toTop=1窗口置顶
     app = win32gui.FindWindow(None,tname)
     rect = win32gui.GetWindowRect(app)  
-    print(rect)
+    # print(rect)
     w = rect[2]-rect[0]
     h = rect[3]-rect[1]
     if toTop == 1:

@@ -154,11 +154,18 @@ VK_CODE = {
 def get_mouse_point():#获取鼠标位置
     return win32api.GetCursorPos()
 def mouse_click(x=None,y=None):#单击（左键）
+    #传了个tuple进来的话
+    if  isinstance(x,tuple):
+        pos = x
+        x=pos[0]
+        y=pos[1]
+    
     if not x is None and not y is None:
         mouse_move(x,y)
         time.sleep(0.05)
     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0)#按下
     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0, 0, 0)#弹起
+    #print("点击坐标：%d,%d" % (x,y))
 def mouse_dclick(x=None,y=None):#双击
     if not x is None and not y is None:
         mouse_move(x,y)
@@ -169,6 +176,7 @@ def mouse_dclick(x=None,y=None):#双击
     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0, 0, 0)
 def mouse_move(x,y):#移动鼠标
     win32api.SetCursorPos((x, y))
+    
 def mouse_click_move(pos1,pos2):#拖动鼠标
     mouse_move(pos1[0],pos1[1])
     time.sleep(1)#一定要等
@@ -200,12 +208,14 @@ def click_pic(pos):#点击图片，pos=(1,2,3,4)
 def show_window_by_title(tname,toTop = 1):#获取窗口句柄并激活窗口,toTop=1窗口置顶
     app = win32gui.FindWindow(None,tname)
     rect = win32gui.GetWindowRect(app)  
-    # print(rect)
+    print(rect)
     w = rect[2]-rect[0]
     h = rect[3]-rect[1]
+    #bottom_height = 
     if toTop == 1:
         win32gui.SetWindowPos(app,win32con.HWND_TOP,0,0,w,h,win32con.SWP_SHOWWINDOW) #有时候获取到的坐标不规范会置顶失败
     win32gui.SetForegroundWindow(app) 
+    return rect
 def enum_windows():#遍历并返回所有可用窗口的title
     titles =[]
     def get_visible_hwnds(hwnd,mouse):
@@ -219,4 +229,4 @@ if __name__ == "__main__":
     # put('hello      world',0)
     # put('ctrl v',1) #快捷键要用空格分开
     print(enum_windows())
-    #show_window_by_title("设置",0)
+    show_window_by_title("BlueStacks App Player",1)

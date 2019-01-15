@@ -154,18 +154,21 @@ VK_CODE = {
 def get_mouse_point():#获取鼠标位置
     return win32api.GetCursorPos()
 def mouse_click(x=None,y=None):#单击（左键）
-    #传了个tuple进来的话
-    if  isinstance(x,tuple):
+    #print(x,y)
+    #传了个数组进来的话
+    if  isinstance(x,tuple) or isinstance(x,list):
         pos = x
-        x=pos[0]
-        y=pos[1]
-    
-    if not x is None and not y is None:
-        mouse_move(x,y)
+        a=pos[0]
+        b=pos[1]       
+    else :
+        a=x
+        b=y
+    if not a is None and not b is None:
+        mouse_move(a,b)
         time.sleep(0.05)
     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0)#按下
     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0, 0, 0)#弹起
-    #print("点击坐标：%d,%d" % (x,y))
+    
 def mouse_dclick(x=None,y=None):#双击
     if not x is None and not y is None:
         mouse_move(x,y)
@@ -174,16 +177,20 @@ def mouse_dclick(x=None,y=None):#双击
     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0, 0, 0)
     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0)
     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0, 0, 0)
+
 def mouse_move(x,y):#移动鼠标
+    x= int(x)
+    y= int(y)
     win32api.SetCursorPos((x, y))
     
 def mouse_click_move(pos1,pos2):#拖动鼠标
     mouse_move(pos1[0],pos1[1])
-    time.sleep(1)#一定要等
+    time.sleep(1)#
     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0)
     mouse_move(pos2[0],pos2[1])
-    time.sleep(1)#不等不行
+    time.sleep(1)#
     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0, 0, 0)
+
 def put(str='',flag=0):#flag默认为0，则表示输入的字符串，为1：字符要表示的是快捷组合按键
     if flag==0:
         for c in str:
@@ -202,6 +209,8 @@ def put(str='',flag=0):#flag默认为0，则表示输入的字符串，为1：�
             win32api.keybd_event(VK_CODE[i],0,win32con.KEYEVENTF_KEYUP,0)
     time.sleep(1)
 def click_pic(pos):#点击图片，pos=(1,2,3,4)
+    # print("点击图片：")
+    # print(pos)
     x= pos[0] +int( (pos[2]-pos[0]) / 2)
     y= pos[1] +int( (pos[3]-pos[1]) / 2)
     mouse_click(x,y)

@@ -157,9 +157,7 @@ def mouse_click(x=None,y=None):#单击（左键）
     #print(x,y)
     #传了个数组进来的话
     if  isinstance(x,tuple) or isinstance(x,list):
-        pos = x
-        a=pos[0]
-        b=pos[1]       
+       a,b = x[::1]     
     else :
         a=x
         b=y

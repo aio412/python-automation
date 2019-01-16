@@ -10,13 +10,14 @@ import numpy as np
 import os
 import json
 
-img_exist = 'D:\Code\python\summonAuto\img\\'
+img_exist = 'D:\Code\python\summonAuto\img\\'   #图片路径
+json_file = "pos960x540.json"                   #配置文件
+tname = u"BlueStacks App Player"                #模拟器
 
 def writelog(text):
     print(text)
 
-def get_pos_dict(name=""):
-    json_file = "pos960x540.json"
+def get_pos_dict(name=""):    
     with open(json_file,'r') as load_f:
         posdict = json.load(load_f)
         if(name!=""):
@@ -30,9 +31,9 @@ def match_img(name,show=0):
     save_img = Image.open(img_exist + name +".png")
     w = int(pos[2]-pos[0])
     h = int(pos[3]-pos[1])
-
+    #转灰度图
     l1= current_img.convert('L') 
-    l2= save_img.convert('L') #转灰度图
+    l2= save_img.convert('L') 
 
     #把图像对象转换为直方图数据，存在list h1、h2 中
     h1= l1.histogram()
@@ -50,11 +51,8 @@ def match_img(name,show=0):
 
 #用来补充图片的方法
 def get_img(name):   
-     #激活窗口
-    tname = u"BlueStacks App Player"
-    mk.show_window_by_title(tname)
-
-    json_file = "pos960x540.json"
+     #激活窗口    
+    mk.show_window_by_title(tname)    
     with open(json_file,'r') as load_f:
         posdict = json.load(load_f)
         pos = posdict[name]
@@ -71,7 +69,7 @@ def run_by_piont(sell=0,auto=0):
     win_pic_name = "success.png"
     writelog("开始")
     #激活窗口
-    tname = u"BlueStacks App Player"
+    #tname = u"BlueStacks App Player"
     screen = mk.show_window_by_title(tname)
 
     turns = 0
@@ -100,11 +98,11 @@ def run_by_piont(sell=0,auto=0):
             
             writelog("第%d次成功" % turns)
             mk.click_pic(success)
-            time.sleep(1)
+            time.sleep(0.5)
             mk.click_pic(success)
-            time.sleep(1)#等开宝箱动画
+            time.sleep(0.5)#等开宝箱动画
             mk.click_pic(success)
-            time.sleep(1.5)
+            time.sleep(1.5) #取决于程序响应速度
 
             if sell == 1:#火山卖符文
                 mk.mouse_click(pos_dict["sell"])
@@ -181,9 +179,17 @@ def run_by_piont(sell=0,auto=0):
                     writelog("没体力了，退出")
                     break
 
-        # else:#战斗失败
-        #     writelog("战斗失败了退出")
-        #     break
+        fail = pos_dict['fail']
+        if match_img("fail")< 1 :
+            writelog("战斗失败")
+            mk.mouse_click(pos_dict["fail_no"])            
+            time.sleep(0.5)
+            mk.mouse_click(pos_dict["again"])    
+            writelog("重新开始")        
+            time.sleep(0.5)
+            turns +=1
+            writelog("第%d次开始" % turns)
+            break
         time.sleep(1) #每秒1次循环
 
 if __name__ =='__main__':

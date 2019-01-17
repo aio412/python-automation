@@ -29,8 +29,7 @@ def match_img(name,show=0):
     pos = get_pos_dict(name)
     current_img = ImageGrab.grab(pos)
     save_img = Image.open(img_exist + name +".png")
-    w = int(pos[2]-pos[0])
-    h = int(pos[3]-pos[1])
+    
     #转灰度图
     l1= current_img.convert('L') 
     l2= save_img.convert('L') 
@@ -66,11 +65,9 @@ def run_by_piont(sell=0,auto=0):
     print("是否出售符文：%d"%sell)
     print("自动从邮箱补体力：%d"%auto)
 
-    win_pic_name = "success.png"
     writelog("开始")
     #激活窗口
-    #tname = u"BlueStacks App Player"
-    screen = mk.show_window_by_title(tname)
+    mk.show_window_by_title(tname)
 
     turns = 0
     add_power = 0
@@ -127,7 +124,7 @@ def run_by_piont(sell=0,auto=0):
             writelog("第%d次开始" % turns)
 
             #体力不足
-            no_power = pos_dict["no_power"]
+            #no_power = pos_dict["no_power"]
             if match_img("no_power") < 1:
                 if auto == 0:
                     writelog("没体力了，退出")
@@ -156,7 +153,7 @@ def run_by_piont(sell=0,auto=0):
                     mk.click_pic(from_shop)
                     time.sleep(2)#慢点免得点到红水买了
                     #友情点
-                    mk.mouse_click(fix_point(315,478))
+                    #mk.mouse_click(fix_point(315,478))
                     time.sleep(2)
 
                     #点确认
@@ -172,7 +169,7 @@ def run_by_piont(sell=0,auto=0):
                     writelog("用友情点自动补充体力第%d次成功" % add_power)
 
                     #再来一次
-                    mk.mouse_click(fix_point(518,540))            
+                    mk.mouse_click(pos_dict["again"])       
                     time.sleep(1)
                     pass
                 else: #没体力了退出

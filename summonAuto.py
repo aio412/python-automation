@@ -61,39 +61,58 @@ def get_img(name):
 
 
 #自动龙十,魔力10，光10，地狱火山带狗粮
-def run_by_piont(sell=0,auto=0):
+def run_by_piont(sell=0,auto=0,maxturns=999):
     print("是否出售符文：%d"%sell)
     print("自动从邮箱补体力：%d"%auto)
+    print("总次数%d"%maxturns)
 
-    writelog("开始")
+    
     #激活窗口
     mk.show_window_by_title(tname)
-
     turns = 0
     add_power = 0
     pos_dict = get_pos_dict()
-    while True:
-        #开打
-        start_button_pos = pos_dict["start_button_pos"]
-        if match_img("start_button_pos") <1:
-            if sell == 1 and turns > 0 : #火山不点这个
-                writelog("有狗粮满级了，退出")
-                break
-            mk.click_pic(start_button_pos)
-            writelog("开始副本战斗")
-            time.sleep(1)
-            turns +=1
+    
+    start = time.time()
+    writelog("开始：%s"% time.ctime())
+    while turns < maxturns:
+        # 开打，不是很必要
+        # start_button_pos = pos_dict["start_button_pos"]
+        # if match_img("start_button_pos") <1:
+        #     if sell == 1 and turns > 0 : #火山不点这个
+        #         writelog("有狗粮满级了，退出")
+        #         break
+        #     mk.click_pic(start_button_pos)
+        #     writelog("开始副本战斗：%s"% time.ctime())
+        #     time.sleep(1)
+        #     turns +=1
         #开自动
         auto_fight = pos_dict["auto_fight"]
         if match_img("auto_fight") < 1:
             mk.click_pic(auto_fight)
             writelog("开启自动")
             time.sleep(1)
-        #胜利 
-        success = pos_dict["success"]
-        if match_img("success") < 11:
+
+        # 失败
+        if match_img("fail") < 15 :
+            writelog("战斗失败")
+            mk.mouse_click(pos_dict["fail_no"])            
+            time.sleep(0.5)
+            mk.mouse_click(pos_dict["again"])    
+            writelog("重新开始")        
+
+            time.sleep(0.5)
+            mk.click_pic(pos_dict["fail"])
+            turns +=1
+            writelog("第%d次开始" % turns)
             
-            writelog("第%d次成功" % turns)
+        #胜利 
+        if match_img("success") < 11:
+            success = pos_dict["success"]
+            finish = time.time()
+            use = (finish - start) 
+            writelog("第%d次成功:%s" % (turns , time.ctime()))
+            writelog("用时%.2f秒" % use)
             mk.click_pic(success)
             time.sleep(0.5)
             mk.click_pic(success)
@@ -118,9 +137,10 @@ def run_by_piont(sell=0,auto=0):
             #time.sleep(0.5)
                                
             #再来一次
-            mk.mouse_click(pos_dict["again"])            
+            mk.mouse_click(pos_dict["again"])
             time.sleep(0.5)
             turns +=1
+            start = time.time()
             writelog("第%d次开始" % turns)
 
             #体力不足
@@ -130,12 +150,11 @@ def run_by_piont(sell=0,auto=0):
                     writelog("没体力了，退出")
                     break
                 from_gift = pos_dict["from_gift"] #选择礼物箱
-                from_shop = pos_dict["from_shop"] #选择商店
-                if match_img(from_gift)< 1:
+                if match_img("from_gift")< 1:
                      
                     mk.click_pic(from_gift)
                     time.sleep(2)
-                    get_power = pos_dict["get_power"]
+                    get_power = pos_dict["get_gift"]
                     #点收取
                     mk.click_pic(get_power)
                     time.sleep(1)
@@ -149,53 +168,22 @@ def run_by_piont(sell=0,auto=0):
                     #再来一次
                     mk.mouse_click(pos_dict["again"])
                     time.sleep(1)
-                elif match_img(from_shop)< 1:
-                    mk.click_pic(from_shop)
-                    time.sleep(2)#慢点免得点到红水买了
-                    #友情点
-                    #mk.mouse_click(fix_point(315,478))
-                    time.sleep(2)
-
-                    #点确认
-                    mk.mouse_click(pos_dict["gift_confirm"])
-                    time.sleep(2)
-
-                    no_fpoint = pos_dict["no_fpoint"]
-                    if match_img(no_fpoint)< 1:
-                         writelog("友情点不足，退出")
-                         break
-
-                    add_power +=1
-                    writelog("用友情点自动补充体力第%d次成功" % add_power)
-
-                    #再来一次
-                    mk.mouse_click(pos_dict["again"])       
-                    time.sleep(1)
-                    pass
+               
+                                
                 else: #没体力了退出
                     writelog("没体力了，退出")
                     break
 
-        fail = pos_dict['fail']
-        if match_img("fail")< 1 :
-            writelog("战斗失败")
-            mk.mouse_click(pos_dict["fail_no"])            
-            time.sleep(0.5)
-            mk.mouse_click(pos_dict["again"])    
-            writelog("重新开始")        
-            time.sleep(0.5)
-            turns +=1
-            writelog("第%d次开始" % turns)
-            break
+       
         time.sleep(1) #每秒1次循环
 
 if __name__ =='__main__':
 
-    get_img("fail")
+    get_img("no_fpoint")
 
     # tname = u"BlueStacks App Player"
     # screen = mk.show_window_by_title(tname)
-    # print(match_img("success",1))
+    # print(match_img("fail",1))
 
 
 
@@ -217,3 +205,11 @@ if __name__ =='__main__':
 
     #     with open("pos960X540.json","w") as new_f:
     #         json.dump(new_dict,new_f)
+
+    # print(time.ctime())
+    # start = time.time()
+    
+    # time.sleep(2.3)
+
+    # finish = time.time()
+    # print("%.2f"%(finish - start)) #显示两位小数点

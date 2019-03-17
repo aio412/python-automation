@@ -50,8 +50,8 @@ def match_img(name,show=0):
 
 #用来补充图片的方法
 def get_img(name):   
-     #激活窗口    
-    mk.show_window_by_title(tname)    
+         #激活窗口    
+    mk.show_window_by_title(tname)
     with open(json_file,'r') as load_f:
         posdict = json.load(load_f)
         pos = posdict[name]
@@ -76,16 +76,17 @@ def run_by_piont(sell=0,auto=0,maxturns=999):
     start = time.time()
     writelog("开始：%s"% time.ctime())
     while turns < maxturns:
-        # 开打，不是很必要
-        # start_button_pos = pos_dict["start_button_pos"]
-        # if match_img("start_button_pos") <1:
-        #     if sell == 1 and turns > 0 : #火山不点这个
-        #         writelog("有狗粮满级了，退出")
-        #         break
-        #     mk.click_pic(start_button_pos)
-        #     writelog("开始副本战斗：%s"% time.ctime())
-        #     time.sleep(1)
-        #     turns +=1
+ 
+        if match_img("start_button_pos") < 6:
+            if sell == 1 and turns > 0 : #火山不点这个
+                writelog("有狗粮满级了，退出")
+                break
+            if match_img("no_power") < 1:
+                writelog("没体力了，退出")
+                break
+            mk.click_pic(pos_dict["start_button_pos"])
+            # writelog("开始副本战斗：%s"% time.ctime())
+            time.sleep(1)
         #开自动
         auto_fight = pos_dict["auto_fight"]
         if match_img("auto_fight") < 1:
@@ -97,12 +98,14 @@ def run_by_piont(sell=0,auto=0,maxturns=999):
         if match_img("fail") < 15 :
             writelog("战斗失败")
             mk.mouse_click(pos_dict["fail_no"])            
-            time.sleep(0.5)
+            time.sleep(1)
             mk.mouse_click(pos_dict["again"])    
             writelog("重新开始")        
 
-            time.sleep(0.5)
+            time.sleep(1)
             mk.click_pic(pos_dict["fail"])
+            time.sleep(2)
+            mk.click_pic(pos_dict["start_button_pos"])
             turns +=1
             writelog("第%d次开始" % turns)
             
@@ -137,11 +140,17 @@ def run_by_piont(sell=0,auto=0,maxturns=999):
             #time.sleep(0.5)
                                
             #再来一次
-            mk.mouse_click(pos_dict["again"])
             time.sleep(0.5)
+            mk.mouse_click(pos_dict["again"])
+            time.sleep(1)
+            mk.mouse_click(pos_dict["again"])
             turns +=1
             start = time.time()
             writelog("第%d次开始" % turns)
+
+            # if match_img("start_button_pos"):
+            #     mk.mouse_click(pos_dict["again"])    
+            #     writelog("重新开始")   
 
             #体力不足
             #no_power = pos_dict["no_power"]
@@ -179,17 +188,14 @@ def run_by_piont(sell=0,auto=0,maxturns=999):
 
 if __name__ =='__main__':
 
-    get_img("no_fpoint")
+    # get_img("start_button_pos")
 
     # tname = u"BlueStacks App Player"
     # screen = mk.show_window_by_title(tname)
     # print(match_img("fail",1))
-
-
-
-    # start_button_pos = [770, 431, 864, 456]
-    # res = match_img(start_button_pos,"start_button_pos.png",1)
-    # print(res)
+    mk.show_window_by_title(tname)
+    res = match_img("start_button_pos",1)
+    print(res)
 
     # with open("position.json",'r') as load_f:
     #     load_dict = json.load(load_f)
